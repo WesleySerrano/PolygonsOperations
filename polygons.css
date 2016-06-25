@@ -1,0 +1,12 @@
+svg
+{
+  border:1px solid #000000;
+}
+
+rect
+{
+  fill:#ADD8E6;
+  border-radius: 10px;
+  rx:10px;
+  ry:10px;
+}
