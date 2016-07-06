@@ -47,13 +47,31 @@ function mouseUp()
 
 function intersection(){console.log('Intersection');}
 function subtraction(){console.log('Subtraction');}
-function union(){console.log('Union');}
+
+function union()
+{
+	if(polygons.length >= 2)
+	{
+	  var verticesA = polygons[polygons.length - 2].attr("points").split(",").map(Number);
+		var verticesB = polygons[polygons.length - 1].attr("points").split(",").map(Number);
+
+	  console.log(verticesA);
+		console.log(verticesB);
+  }
+}
+
+function keyBoardHandler()
+{
+  if(d3.event.keyCode == KEY_CODE_I) intersection();
+	if(d3.event.keyCode == KEY_CODE_S) subtraction();
+	if(d3.event.keyCode == KEY_CODE_U) union();
+}
 
 function init()
 {
 	svg = d3.select("body").append("svg").attr("width",WIDTH).attr("height",HEIGHT)
 	      .on("mousedown",mouseClick)
 				.on("mousemove",mouseMove)
-				.on("mouseup",mouseUp)
-				.on("keydown",union);				
+				.on("mouseup",mouseUp);
+  d3.select(window).on('keydown',keyBoardHandler);
 }
