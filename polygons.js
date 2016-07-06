@@ -8,15 +8,20 @@ var currentPolygon;
 var dragged = false;
 var KEY_CODE_I = 73, KEY_CODE_S = 83, KEY_CODE_U = 85;
 
+function Vertex(x, y)
+{
+	return {x:x, y:y};
+}
+
 function mouseClick()
 {
 	var mousePosition = d3.mouse(this);
 	mouseX = mousePosition[0];
 	mouseY = mousePosition[1];
- dragged = true;
- if(polygons.length >= 2)polygons[polygons.length - 2].attr("class","");
- var points = [mouseX, mouseY, mouseX, mouseY, mouseX, mouseY, mouseX, mouseY];
- currentPolygon = svg.append("polygon").attr("class","top").attr("points", points);
+  dragged = true;
+  if(polygons.length >= 2) polygons[polygons.length - 2].attr("class","");
+  var points = [mouseX, mouseY, mouseX, mouseY, mouseX, mouseY, mouseX, mouseY];
+  currentPolygon = svg.append("polygon").attr("class","top").attr("points", points);
 }
 
 function mouseMove()
@@ -52,11 +57,21 @@ function union()
 {
 	if(polygons.length >= 2)
 	{
-	  var verticesA = polygons[polygons.length - 2].attr("points").split(",").map(Number);
-		var verticesB = polygons[polygons.length - 1].attr("points").split(",").map(Number);
+	  var verticesListA = polygons[polygons.length - 2].attr("points").split(",").map(Number);
+		var verticesListB = polygons[polygons.length - 1].attr("points").split(",").map(Number);
+		polygons = polygons.slice(0,polygons.length - 2);
 
-	  console.log(verticesA);
-		console.log(verticesB);
+		var verticesA = [], verticesB = [];
+		for(var i = 0; i < verticesListA.length; i+=2)
+		{
+			var x = verticesListA[i], y = verticesListA[i + 1];
+			verticesA.push(Vertex(x, y));
+		}
+		for(var i = 0; i < verticesListB.length; i+=2)
+		{
+			var x = verticesListB[i], y = verticesListB[i + 1];
+			verticesB.push(Vertex(x, y));
+		}
   }
 }
 
