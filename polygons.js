@@ -16,7 +16,7 @@ function mouseClick()
  dragged = true;
  if(polygons.length >= 2)polygons[polygons.length - 2].attr("class","");
  var points = [mouseX, mouseY, mouseX, mouseY, mouseX, mouseY, mouseX, mouseY];
-	currentPolygon = svg.append("polygon").attr("class","top").attr("points", points);
+ currentPolygon = svg.append("polygon").attr("class","top").attr("points", points);
 }
 
 function mouseMove()
@@ -45,10 +45,15 @@ function mouseUp()
 	polygons.push(currentPolygon);
 }
 
+function intersection(){console.log('Intersection');}
+function subtraction(){console.log('Subtraction');}
+function union(){console.log('Union');}
+
 function init()
 {
 	svg = d3.select("body").append("svg").attr("width",WIDTH).attr("height",HEIGHT)
 	      .on("mousedown",mouseClick)
 				.on("mousemove",mouseMove)
-				.on("mouseup",mouseUp);
+				.on("mouseup",mouseUp)
+				.on("keydown",union);				
 }
