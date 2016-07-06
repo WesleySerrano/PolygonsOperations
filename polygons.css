@@ -1,12 +1,31 @@
 svg
 {
-  border:1px solid #000000;
+  /*border:1px solid #000000;*/
+  background-color:#FFC5B9;
 }
 
-rect
+/*
+255 197 185 FFC5B9
+254 117 185 FE75B9
+184 68 191 B844BF
+*/
+
+polygon.top
 {
-  fill:#ADD8E6;
+  fill:#B844BF;
+  stroke:#FE75B9;
+  stroke-width:2px;
   border-radius: 10px;
   rx:10px;
   ry:10px;
+  opacity: 0.7;
+}
+
+polygon
+{
+  fill:#FE75B9;
+  border-radius: 10px;
+  rx:10px;
+  ry:10px;
+  opacity: 0.7;
 }
