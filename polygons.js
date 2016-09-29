@@ -144,19 +144,18 @@ function weilerAthertonAlgorithm(operation)
 			{
 				if(currentPoint.isEntering === true)
 				{
-					listIndex = 0;
-					drawCircle(svg, currentPoint.x, currentPoint.y, RADIUS + (inc++),"in");
+					listIndex = 1;
 				}
 				else
 				{
-					listIndex = 1;
-					drawCircle(svg, currentPoint.x, currentPoint.y, RADIUS + (inc++),"out");
+					listIndex = 0;
 				}
 				activeList = lists[listIndex];
 				currentIndex = activeList.indexOf(currentPoint);
 			}
 		}
-		while(inc < intersections.length)
+		while(currentPoint != firstPoint);
+
 		polygons.push(svg.append("polygon").attr("class","result").attr("points", resultPoints));
 	}
 	else if(operation == "INTERSECTION")
