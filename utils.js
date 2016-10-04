@@ -110,8 +110,6 @@ function findCenterPoint(points)
 	return new Vertex(x/points.length, y/points.length);
 }
 
-
-
 function sortCounterclockwise(points)
 {
 	var center = findCenterPoint(points);
@@ -141,4 +139,33 @@ function sortCounterclockwise(points)
 	});
 
 	return points;
+}
+
+function pointInPolygon(testVertex, polygonVerticesList)
+{
+	var isInside = false;
+	for(var i = 0, j = polygonVerticesList.length - 1; i < polygonVerticesList.length; j = i++)
+	{
+		var vertexA = polygonVerticesList[i], vertexB = polygonVerticesList[j];
+		if ( ((vertexA.y>testVertex.y) != (vertexB.y>testVertex.y)) &&
+	 (testVertex.x < (vertexB.x-vertexA.x) * (testVertex.y-vertexA.y) / (vertexB.y-vertexA.y) + vertexA.x) )
+		 isInside = !isInside;
+	}
+	return isInside;
+}
+
+function findFirstInstersectionIndex(verticesList, intersectionsList)
+{
+	var index = 0;
+  var p = intersectionsList[index];
+
+	while(p.isEntering === false)
+	{
+		index++;
+		p = intersectionsList[index];
+	}
+
+	index = verticesList.indexOf(p);
+
+	return index;
 }

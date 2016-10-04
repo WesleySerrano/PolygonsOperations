@@ -121,54 +121,42 @@ function weilerAthertonAlgorithm(operation)
 	verticesListB = auxVerticesPolyB.concat(intersections);
 	verticesListB = sortCounterclockwise(verticesListB);
 	/***********************************************/
-	/*polyA.remove();
-	polyB.remove();*/
+
+	polyA.remove();
+	polyB.remove();
+
 	if(operation === "UNION")
 	{
 		var resultPoints = [];
-		var lists = [verticesListA, verticesListB];
-		var listIndex = 0;
-		var activeList = verticesListA;
-		var currentIndex = 0;
-		var currentPoint = activeList[currentIndex];
-		var firstPoint = currentPoint;
-		var inc = 0;
-		do
+		if(intersections.length == 0)
 		{
-			resultPoints.push(currentPoint.x, currentPoint.y);
-
-			currentIndex = (currentIndex + 1)%activeList.length;
-			currentPoint = activeList[currentIndex];
-
-			if(currentPoint.isIntersection === true)
+			if(pointInPolygon(verticesListB[0], verticesListA))
 			{
-				if(currentPoint.isEntering === true)
-				{
-					listIndex = 1;
-				}
-				else
-				{
-					listIndex = 0;
-				}
-				activeList = lists[listIndex];
-				currentIndex = activeList.indexOf(currentPoint);
+				for(var i = 0; i < verticesListA.length; i++) resultPoints.push(verticesListA[i].x, verticesListA[i].y);
+			}
+			else if(pointInPolygon(verticesListA[0], verticesListB))
+			{
+				for(var i = 0; i < verticesListB.length; i++) resultPoints.push(verticesListB[i].x, verticesListB[i].y);
+			}
+			else
+			{
+				var polyA = [], polyB = [];
+				for(var i = 0; i < verticesListA.length; i++) polyA.push(verticesListA[i].x, verticesListA[i].y);
+				for(var i = 0; i < verticesListB.length; i++) polyB.push(verticesListB[i].x, verticesListB[i].y);
+
+			  polygons.push(svg.append("polygon").attr("class","result").attr("points", polyA));
+			  polygons.push(svg.append("polygon").attr("class","result").attr("points", polyB));
+				return;
 			}
 		}
-		while(currentPoint != firstPoint);
-
-		polygons.push(svg.append("polygon").attr("class","result").attr("points", resultPoints));
-	}
-	else if(operation == "INTERSECTION")
-	{
-
-			var resultPoints = [];
+		else
+		{
 			var lists = [verticesListA, verticesListB];
 			var listIndex = 0;
 			var activeList = verticesListA;
-			var currentIndex = activeList.indexOf(intersections[0]);
+			var currentIndex = findFirstInstersectionIndex(verticesListA, intersections) - 1;
 			var currentPoint = activeList[currentIndex];
 			var firstPoint = currentPoint;
-			var inc = 0;
 			do
 			{
 				resultPoints.push(currentPoint.x, currentPoint.y);
@@ -178,32 +166,155 @@ function weilerAthertonAlgorithm(operation)
 
 				if(currentPoint.isIntersection === true)
 				{
-					if(currentPoint.isEntering === true) listIndex = 0;
-					else listIndex = 1;
+					if(currentPoint.isEntering === true)
+					{
+						listIndex = 1;
+					}
+					else
+					{
+						listIndex = 0;
+					}
 					activeList = lists[listIndex];
 					currentIndex = activeList.indexOf(currentPoint);
 				}
 			}
-			while(firstPoint != currentPoint)
+			while(currentPoint != firstPoint);
+	  }
+		polygons.push(svg.append("polygon").attr("class","result").attr("points", resultPoints));
+	}
+	else if(operation == "INTERSECTION")
+	{
+			var resultPoints = [];
+			if(intersections.length == 0)
+			{
+				if(pointInPolygon(verticesListB[0], verticesListA))
+				{
+					for(var i = 0; i < verticesListA.length; i++) resultPoints.push(verticesListB[i].x, verticesListB[i].y);
+				}
+				else if(pointInPolygon(verticesListA[0], verticesListB))
+				{
+					for(var i = 0; i < verticesListB.length; i++) resultPoints.push(verticesListA[i].x, verticesListA[i].y);
+				}
+				else
+				{
+					return;
+				}
+			}
+			else
+			{
+				var lists = [verticesListA, verticesListB];
+				var listIndex = 0;
+				var activeList = verticesListA;
+				var currentIndex = activeList.indexOf(intersections[0]);
+				var currentPoint = activeList[currentIndex];
+				var firstPoint = currentPoint;
+				do
+				{
+					resultPoints.push(currentPoint.x, currentPoint.y);
+
+					currentIndex = (currentIndex + 1)%activeList.length;
+					currentPoint = activeList[currentIndex];
+
+					if(currentPoint.isIntersection === true)
+					{
+						if(currentPoint.isEntering === true) listIndex = 0;
+						else listIndex = 1;
+						activeList = lists[listIndex];
+						currentIndex = activeList.indexOf(currentPoint);
+					}
+				}
+				while(firstPoint != currentPoint)
+		  }
 			polygons.push(svg.append("polygon").attr("class","result").attr("points", resultPoints));
+	}
+	else if(operation == "SUBTRACTION")
+	{
+		var resultPoints = [];
+		if(intersections.length == 0)
+		{
+			if(pointInPolygon(verticesListB[0], verticesListA))
+			{
+				for(var i = 0; i < verticesListA.length; i++) resultPoints.push(verticesListB[i].x, verticesListB[i].y);
+			}
+			else if(pointInPolygon(verticesListA[0], verticesListB))
+			{
+				for(var i = 0; i < verticesListB.length; i++) resultPoints.push(verticesListA[i].x, verticesListA[i].y);
+			}
+			else
+			{
+				return;
+			}
+		}
+		else
+		{
+			var lists = [verticesListA, verticesListB];
+			var listIndex = 1;
+			var activeList = verticesListB;
+			var currentIndex = 0;
+			var currentPoint = activeList[currentIndex];
+			var firstPoint = currentPoint;
+			do
+			{
+				if(listIndex === 1)
+				{
+					var otherListIndex = (listIndex + 1)%2;
+					if(!pointInPolygon(currentPoint, verticesListA) || currentPoint.isIntersection)
+					{
+						resultPoints.push(currentPoint.x, currentPoint.y);
+					}
+			  }
+				else resultPoints.push(currentPoint.x, currentPoint.y);
+
+				if(listIndex === 1) currentIndex = (currentIndex + 1)%activeList.length;
+				else currentIndex = (currentIndex - 1)%activeList.length;
+				currentPoint = activeList[currentIndex];
+
+				if(currentPoint.isIntersection === true)
+				{
+					if(currentPoint.isEntering === true)
+					{
+						listIndex = 1;
+					}
+					else
+					{
+						listIndex = 0;
+					}
+					activeList = lists[listIndex];
+					currentIndex = activeList.indexOf(currentPoint);
+				}
+			}
+			while(currentPoint != firstPoint);
+		}
+		polygons.push(svg.append("polygon").attr("class","result").attr("points", resultPoints));
 	}
 }
 
 function init()
 {
 	svg = d3.select("body").append("svg").attr("width",WIDTH).attr("height",HEIGHT)
-	      /*.on("mousedown",mouseClick)
+	      .on("mousedown",mouseClick)
 				.on("mousemove",mouseMove)
-				.on("mouseup",mouseUp)*/;
-  var polyA = [300, 240, 240, 420, 450, 570, 570, 390, 540, 270];
-	var polyB = [360, 210, 240, 360, 330, 420, 600, 330];
+				.on("mouseup",mouseUp);
+  /*var polyA = [300, 240, 240, 420, 450, 570, 570, 390, 540, 270];
+	var polyB = [360, 210, 240, 360, 330, 420, 600, 330];*/
+
+  /*var polyA = [229,52,229,284,400,284,400,52];
+  var polyB = [329,236,329,436,429,436,429,236];*/
+
+	//var polyA = [100, 100, 100, 300, 300, 300, 300, 100];
+	//var polyB = [125, 125, 125, 275, 275, 275, 275, 125];
+	//var polyB = [400, 100, 400, 300, 700, 300, 700, 100];
 
   /*var polyA = [450, 500, 560, 200, 640, 230, 700, 200, 660, 480];
 	var polyB = [300, 240, 600, 220, 580, 440, 320, 440];*/
-	polygons.push(svg.append("polygon").attr("points", polyA));
-	polygons.push(svg.append("polygon").attr("class","top").attr("points", polyB));
 
-	weilerAthertonAlgorithm();
+	/*polygons.push(svg.append("polygon").attr("points", polyA));
+	polygons.push(svg.append("polygon").attr("class","top").attr("points", polyB));*/
+
+  d3.select("body").append("br");
+	d3.select("body").append("button").html("União").attr("onclick", "weilerAthertonAlgorithm(\"UNION\")");
+	d3.select("body").append("button").html("Interseção").attr("onclick", "weilerAthertonAlgorithm(\"INTERSECTION\")");
+	//d3.select("body").append("button").html("Subtração").attr("onclick", "weilerAthertonAlgorithm(\"SUBTRACTION\")");
 
   //d3.select(window).on('keydown',keyBoardHandler);
 }
